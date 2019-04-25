@@ -10,7 +10,7 @@ import datetime
 from flask import Flask, render_template
 from flask.templating import Environment
 
-from pyecharts import HeatMap, Map
+from pyecharts import HeatMap, Map,Bar
 from pyecharts.engine import ECHAERTS_TEMPLATE_FUNCTIONS
 from pyecharts.conf import PyEchartsConfig
 
@@ -31,7 +31,7 @@ class MyFlask(Flask):
 
 app = MyFlask(__name__)
 
-
+@app.route("/hi")
 @app.route("/")
 def index():
     return render_template('index.html')
@@ -40,7 +40,7 @@ def index():
 @app.route("/heatmap/")
 def heatmap():
     hm = create_heatmap()
-    return render_template('heatmap.html', hm=hm)
+    return render_template('heatmap.html', m=hm)
 
 
 def create_heatmap():
@@ -68,5 +68,11 @@ def fujian():
             visual_text_color='#000')
     return render_template('fujian_map.html', m=map)
 
+@app.route('/bar/')
+def bar():
+    bar = Bar()
+    bar.add('格式化',["atf_tb1","shop"],[10,50])
+    bar.add("范围", ["shop"], [120])
+    return render_template('heatmap.html', m=bar)
 
-app.run(port=10200)
+app.run(port=5000)
