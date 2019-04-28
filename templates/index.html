@@ -18,7 +18,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="javascript:">旅游数据分析</a>
+            <a class="navbar-brand" href="javascript:">旅游数据分析系统</a>
 
             <ul class="nav navbar-nav">
                 <li><a href="/">首页</a></li>
@@ -34,9 +34,14 @@
     <div class="row">
         <div class="col-md-6">
             <div class="panel panel-default">
-                <div class="panel-heading">日历热力图</div>
+                <div class="panel-heading">热门城市分析</div>
                 <div class="panel-body">
-                    <p><a href="/heatmap/">某人 2017 年微信步数情况</a></p>
+                    <p><a href="/top">请输入前n名热门城市(默认10)</a></p>
+                        <form  method="post" action="{{url_for('top')}}">
+                           第n名（默认1） <input type="text" name="topCityStart" value="1" />
+                           第m名(默认10)<input type="text" name="topCityEnd" value="10">
+                            <input type="submit" name="Submit"/>
+                        </form>
                 </div>
             </div>
         </div>
@@ -60,7 +65,7 @@
             <div class="panel panel-default">
                 <div class="panel-heading">日历热力图</div>
                 <div class="panel-body">
-                    <p><a href="/heatmap/">某人 2017 年微信步数情况</a></p>
+                    <p><a href="/heatmap/">2017 年微信步数情况</a></p>
                 </div>
             </div>
         </div>

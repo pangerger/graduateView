@@ -1,11 +1,12 @@
 <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>Flask + pyecharts 整合示例</title>
+    <title>中国城市相关数据分析</title>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}"/>
     <script type="text/javascript" src="{{ url_for('static', filename='bootstrap/js/bootstrap.min.js') }}"></script>
-    {{ echarts_js_dependencies(m) }}
+    {{ echarts_js_dependencies(micheal) }}
 </head>
 <body style="padding-top: 70px;">
 
@@ -33,21 +34,42 @@
 <!-- /.navbar -->
 <div class="container">
     <p>
-        这是一个由 Flask 和 pyecharts 整合的一个例子。主要特点在于：
+        首先是对中国第{{topCityStart}}到{{topCityEnd}}城市旅游数据：
     </p>
     <ul>
-        <li>完全使用本地的js文件</li>
-        <li>在模板文件中使用 echarts_* 模板函数。</li>
+        <li>这些城市是：
+            {% for name in cityName  %}
+               {{name}}&nbsp
+            {% endfor %}
+        </li>
+        <li>竖向图。</li>
     </ul>
 
     <div class="panel panel-default">
-        <div class="panel-heading">日历热力图示例</div>
+        <div class="panel-heading">竖向图示例</div>
         <div class="panel-body">
-            {{ echarts_container(m) }}
+            {{ echarts_container(micheal) }}
         </div>
     </div>
 
-    {{ echarts_js_content(m) }}
+    {{ echarts_js_content(micheal) }}
+
+    <ul>
+        <li>累积旅游人数</li>
+        <li>横向图</li>
+    </ul>
+
+    <div class="panel panel-default">
+        <div class="panel-heading">横向图示例</div>
+        <div class="panel-body">
+            {{ echarts_container(second) }}
+        </div>
+    </div>
+
+    {{ echarts_js_content(second) }}
+
+
+
 </div>
 </body>
 </html>
