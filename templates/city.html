@@ -6,7 +6,7 @@
     <title>中国城市相关数据分析</title>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}"/>
     <script type="text/javascript" src="{{ url_for('static', filename='bootstrap/js/bootstrap.min.js') }}"></script>
-    {{ echarts_js_dependencies(micheal) }}
+    {{ echarts_js_dependencies() }}
 </head>
 <body style="padding-top: 70px;">
 
@@ -68,8 +68,38 @@
 
     {{ echarts_js_content(second) }}
 
+    <ul>
+        <li>累积旅游人数</li>
+        <li>饼图分析</li>
+    </ul>
+
+    <div class="panel panel-default">
+        <div class="panel-heading">饼图示例</div>
+        <div class="panel-body">
+            {{ echarts_container(third) }}
+        </div>
+    </div>
+
+    {{ echarts_js_content(third) }}
+
+    <div class="panel panel-default">
+        <div class="panel-heading">折线图示例</div>
+        <div class="panel-body">
+            {{ echarts_container(ford) }}
+        </div>
+    </div>
+
+    {{ echarts_js_content(ford) }}
+
+    <div class="panel panel-default">
+        <div class="panel-heading">玫瑰图示例</div>
+        <div class="panel-body">
+            {{ echarts_container(fifth) }}
+        </div>
+    </div>
+
+    {{ echarts_js_content(fifth) }}
 
 
-</div>
 </body>
 </html>

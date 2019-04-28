@@ -8,10 +8,11 @@ import random
 import datetime
 import pymysql as MYSQLdb # 起个别名
 
-from flask import Flask, render_template,request
+from flask import Flask, render_template,request,send_from_directory
 from flask.templating import Environment
+import os.path
 
-from pyecharts import HeatMap, Map,Bar,Page
+from pyecharts import HeatMap, Map,Bar,Pie,WordCloud,Line,EffectScatter,configure,Geo
 from pyecharts.engine import ECHAERTS_TEMPLATE_FUNCTIONS
 from pyecharts.conf import PyEchartsConfig
 
@@ -80,8 +81,13 @@ def top():
     count=cur.execute(query)
     #count=int(count)
     #pan=Page()
-    bar=Bar("top 旅游城市")
-    barH=Bar()
+    bar=Bar("top 旅游城市")#柱形 竖
+    barH=Bar()# 柱形 横
+    line=Line('top 旅游城市')# 折线
+    es=Pie('top 旅游城市')# rose
+    pie=Pie("top 旅游城市")# 饼
+    wordCloud=WordCloud(width=800,height=500)# 云词图
+    #wordCloud.show_config()
     att=list()
     value=list()
     while count>0:
@@ -92,14 +98,64 @@ def top():
         #bar.add_yaxis(one[1],int(one[3]))
         count=count-1
 
-    bar.add('出行人数',att,value,is_label_show = True)
-    
-    barH.add('出行人数',att,value,is_label_show = True,label_pos = 'inside',is_convert = True)
+    bar.add('旅游人数',att,value,is_label_show = True,is_random=True)
+    line.add('旅游人数',att,value,is_label_show=True)
+    barH.add('旅游人数',att,value,is_label_show = True,label_pos = 'inside',is_convert = True,is_random=True)
+    es.add('旅游人数',att,value,is_label_show=True,center = [25,50],radius=[30, 75],rosetype='radius')
+    pie.add("旅游人数",att,value,is_label_show=True)
 
-    #cur.close()
+    #wordCloud.add('',att,value,word_size_range=[30,100])
+    #wordCloud.add('',("Sam S Club", 10000),("Macys", 6181),word_size_range=[30,100])
+    #wordCloud.show_config()
+    cur.close()
     #conn.close()
-    return render_template('city.html',micheal=bar,second=barH,topCityStart=start,topCityEnd=end,cityName=att)
+    return render_template('city.html',micheal=bar,second=barH,third=pie,ford=line,fifth=es,topCityStart=start,topCityEnd=end,cityName=att)
 
+@app.route("/geo")
+def hello():
+    try:
+        topCityStart=request.form['topCityStart']
+        topCityEnd=request.form['topCityEnd']
+    except Exception as e:
+        print(e.args)
+        topCityStart='1'
+        topCityEnd='10'
+    start=topCityStart
+    end=topCityEnd
+    x=int(topCityEnd)
+    y=int(topCityStart)-1
+    z=x-y
+    topCityStart=str(y)
+    topCityEnd=str(z)
+    #topCityEnd=str(z)
+    
+    query="SELECT * FROM city order by nums desc limit "+topCityStart+","+topCityEnd
+    
+    cur=getcur()
+    count=cur.execute(query)
+    geo=Geo("全国主要旅游城市", "分布图",title_color="#fff", title_pos="center", width=1200, height=600, background_color='#404a59')
+    att=list()
+    value=list()
+    while count>0:
+        one=cur.fetchone()
+        att.append(one[1])
+        value.append(one[3])
+        #bar.add(one[1],int(one[3]))
+        #bar.add_yaxis(one[1],int(one[3]))
+        count=count-1
+
+    geo.add_coordinate('丽江',100.22775, 26.855047)
+    geo.add('',att,value,maptype='china',type="effectScatter",is_random=True, effect_scale=5,
+        visual_text_color= "#fff",
+        is_visualmap= True)
+    #data =[("海门", 9), ("鄂尔多斯", 12), ("招远", 12), ("舟山", 12), ("齐齐哈尔", 14), ("盐城", 15)]
+    #geo =Geo("全国主要城市空气质量", "data from pm2.5",title_color="#fff", title_pos="center", width=1200, height=600, background_color='#404a59')
+    #attr, value =geo.cast(data)
+    #geo.add("", attr, value, type="effectScatter",maptype="china", is_random=True, effect_scale=5)
+
+    geo.render('hi.html')
+    root = os.path.join(os.path.dirname(os.path.abspath(__file__)))#html是个文件夹
+    return send_from_directory(root,'hi.html')
 
 @app.route("/heatmap/")
 def heatmap():
