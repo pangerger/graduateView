@@ -12,7 +12,7 @@ from flask import Flask, render_template,request,send_from_directory
 from flask.templating import Environment
 import os.path
 
-from pyecharts import HeatMap, Map,Bar,Pie,WordCloud,Line,EffectScatter,configure,Geo,Page
+from pyecharts import HeatMap, Map,Bar,Pie,WordCloud,Line,EffectScatter,configure,Geo,Page,Timeline,Style,Funnel
 from pyecharts.engine import ECHAERTS_TEMPLATE_FUNCTIONS
 from pyecharts.conf import PyEchartsConfig
 
@@ -133,7 +133,7 @@ def geo():
     
     cur=getcur()
     count=cur.execute(query)
-    page=Page()
+    page=Page(page_title="旅游城市地理分析")
     #Geo.add_coordinate('丽江',100.22775, 26.855047)
     geo=Geo("全国主要旅游城市", "分布图",title_color="#fff", title_pos="center", width=1200, height=600, background_color='#404a59')
     geore=Geo("全国主要旅游城市", "热力图",title_color="#fff", title_pos="center", width=1200, height=600)
@@ -178,7 +178,7 @@ def geo():
     geore.add_coordinate('婺源',117.85,29.25)
     geore.add_coordinate('鼓浪屿',118.066102, 24.446214)
     #effectScatter
-    geo.add('',att,value,maptype='china',type="effectScatter",is_random=True, effect_scale=5,
+    geo.add('one',att,value,maptype='china',type="effectScatter",is_random=True, effect_scale=5,
         visual_text_color= "#fff",
         is_visualmap= True)
     geore.add('',att,value,maptype='china',type="heatmap",is_random=True, effect_scale=5,
@@ -228,12 +228,84 @@ def cloud():
         #bar.add(one[1],int(one[3]))
         #bar.add_yaxis(one[1],int(one[3]))
         count=count-1
-    wordCloud=WordCloud(width=1000,height=600)
+    wordCloud=WordCloud(width=1000,height=600,page_title="云词图分析")
     wordCloud.add("热门城市云词图分析",att,value,word_size_range=[20,100],shape='apple')
     wordCloud.render('cloud.html')
     root = os.path.join(os.path.dirname(os.path.abspath(__file__)))#html是个文件夹
     cur.close()
     return send_from_directory(root,'cloud.html')
+
+@app.route("/top3",methods=['post','get'])
+def top3():
+    try:
+        topCityStart=request.form['topCityStart']
+        topCityEnd=request.form['topCityEnd']
+    except Exception as e:
+        print(e.args)
+        topCityStart='1'
+        topCityEnd='10'
+    start=topCityStart
+    end=topCityEnd
+    x=int(topCityEnd)
+    y=int(topCityStart)-1
+    z=x-y
+    topCityStart=str(y)
+    topCityEnd=str(z)
+    #topCityEnd=str(z)
+    
+    query="SELECT * FROM city order by nums desc limit "+topCityStart+","+topCityEnd
+    
+    cur=getcur()
+    count=cur.execute(query)
+    cnt=count
+    t=Timeline("热门城市旅游top3景点",timeline_bottom=0)
+    t2=Timeline("热门城市旅游top3景点",timeline_bottom=0)
+    
+    '''
+    pieAll=Pie("top3景点")
+    style = Style()
+    pie_style = style.add(
+    label_pos="center",
+    is_label_show=True,
+    label_text_color=None
+    )
+    '''
+    page=Page(page_title="top3景点分析")
+    pie=Pie("本市top3旅游景点")
+    
+
+    cityName=list()
+    att=list()
+    value=[39,33,28]
+    while count>0:
+        one=cur.fetchone()
+        cityName.append(one[1])
+        att.append(one[6])
+        att.append(one[8])
+        att.append(one[10])
+        count=count-1
+    i=0
+    for j in range(cnt):
+        pie=Pie("本市top3旅游景点")
+        funnel=Funnel("top3景点")
+        pie.add(cityName[j],[att[i],att[i+1],att[i+2]],value,center = [25,50],radius=[30, 75],rosetype='radius')
+        t.add(pie,cityName[j])
+        funnel.add("",[att[i],att[i+1],att[i+2]],value,is_label_show=True)
+        t2.add(funnel,cityName[j])
+        i+=3
+    # label_pos="inside",
+    # label_text_color="#fff",)
+        #pieAll.add("",[att[i],att[i+1],att[i+2]],[39,33,28],center=[10, 30], radius=[18, 24], **pie_style)
+    #pie.add('旅游人数',['a','b'],[3,5],center = [25,50],radius=[30, 75],rosetype='radius')
+
+    #t.render('top3.html')
+    root = os.path.join(os.path.dirname(os.path.abspath(__file__)))#html是个文件夹
+    cur.close()
+    page.add(t)
+    page.add(t2)
+    page.render('top3.html')
+    #return render_template('map.html', m=page)
+    return send_from_directory(root,'top3.html')
 
 @app.route("/heatmap/")
 def heatmap():

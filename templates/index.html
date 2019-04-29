@@ -77,12 +77,12 @@
         
         <div class="col-md-6">
             <div class="panel panel-default">
-                <div class="panel-heading">热门热力图分析</div>
+                <div class="panel-heading">城市热门景点</div>
                 <div class="panel-body">
-                    <p><a href="/geo/">云词图</a>
-                        <form  method="post" action="{{url_for('cloud')}}">
-                           第n名（默认1） <input type="number" name="topCityStart" oninput="if(value<1) value=1" /><br><br>
-                           第m名(默认10) &nbsp&nbsp<input type="number" name="topCityEnd" oninput="if(value>50) value=50"><br><br>
+                    <p><a href="/top3/">热门城市top3景点</a>
+                        <form  method="post" action="{{url_for('top3')}}">
+                           第n名（默认1） <input type="number" name="topCityStart" oninput="if(value<1) value=1" value=1 /><br><br>
+                           第m名(默认10) &nbsp&nbsp<input type="number" name="topCityEnd" oninput="if(value>50) value=50" value=10 /><br><br>
                             <input type="submit" name="Submit"/>
                         </form>
                     </p>
