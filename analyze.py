@@ -12,7 +12,7 @@ from flask import Flask, render_template,request,send_from_directory
 from flask.templating import Environment
 import os.path
 
-from pyecharts import HeatMap, Map,Bar,Pie,WordCloud,Line,EffectScatter,configure,Geo
+from pyecharts import HeatMap, Map,Bar,Pie,WordCloud,Line,EffectScatter,configure,Geo,Page
 from pyecharts.engine import ECHAERTS_TEMPLATE_FUNCTIONS
 from pyecharts.conf import PyEchartsConfig
 
@@ -86,7 +86,7 @@ def top():
     line=Line('top 旅游城市')# 折线
     es=Pie('top 旅游城市')# rose
     pie=Pie("top 旅游城市")# 饼
-    wordCloud=WordCloud(width=800,height=500)# 云词图
+    #wordCloud=WordCloud(width=800,height=500)# 云词图
     #wordCloud.show_config()
     att=list()
     value=list()
@@ -111,8 +111,8 @@ def top():
     #conn.close()
     return render_template('city.html',micheal=bar,second=barH,third=pie,ford=line,fifth=es,topCityStart=start,topCityEnd=end,cityName=att)
 
-@app.route("/geo")
-def hello():
+@app.route("/geo",methods=['post','get'])
+def geo():
     try:
         topCityStart=request.form['topCityStart']
         topCityEnd=request.form['topCityEnd']
@@ -133,7 +133,11 @@ def hello():
     
     cur=getcur()
     count=cur.execute(query)
+    page=Page()
+    #Geo.add_coordinate('丽江',100.22775, 26.855047)
     geo=Geo("全国主要旅游城市", "分布图",title_color="#fff", title_pos="center", width=1200, height=600, background_color='#404a59')
+    geore=Geo("全国主要旅游城市", "热力图",title_color="#fff", title_pos="center", width=1200, height=600)
+
     att=list()
     value=list()
     while count>0:
@@ -143,19 +147,93 @@ def hello():
         #bar.add(one[1],int(one[3]))
         #bar.add_yaxis(one[1],int(one[3]))
         count=count-1
-
+# oh-----
     geo.add_coordinate('丽江',100.22775, 26.855047)
+    geo.add_coordinate('乌镇',120.549822, 30.779863)
+    geo.add_coordinate('西塘',120.892624, 30.944639)
+    geo.add_coordinate('阳朔',110.496593, 24.778481)
+    geo.add_coordinate('九寨沟',104.243841, 33.252056)
+    geo.add_coordinate('凤凰古镇',114.892674, 30.40661)
+    geo.add_coordinate('香格里拉',99.700836, 27.829743)
+    geo.add_coordinate('泰山',117.135354, 36.192084)
+    geo.add_coordinate('束河',100.225766, 26.87719)
+    geo.add_coordinate('泸沽湖',101.50546, 27.431771)
+    geo.add_coordinate('青海湖',100.99443, 36.896467)
+    geo.add_coordinate('华山',110.089198, 34.52834)
+    geo.add_coordinate('婺源',117.85,29.25)
+    geo.add_coordinate('鼓浪屿',118.066102, 24.446214)
+
+    geore.add_coordinate('丽江',100.22775, 26.855047)
+    geore.add_coordinate('乌镇',120.549822, 30.779863)
+    geore.add_coordinate('西塘',120.892624, 30.944639)
+    geore.add_coordinate('阳朔',110.496593, 24.778481)
+    geore.add_coordinate('九寨沟',104.243841, 33.252056)
+    geore.add_coordinate('凤凰古镇',114.892674, 30.40661)
+    geore.add_coordinate('香格里拉',99.700836, 27.829743)
+    geore.add_coordinate('泰山',117.135354, 36.192084)
+    geore.add_coordinate('束河',100.225766, 26.87719)
+    geore.add_coordinate('泸沽湖',101.50546, 27.431771)
+    geore.add_coordinate('青海湖',100.99443, 36.896467)
+    geore.add_coordinate('华山',110.089198, 34.52834)
+    geore.add_coordinate('婺源',117.85,29.25)
+    geore.add_coordinate('鼓浪屿',118.066102, 24.446214)
+    #effectScatter
     geo.add('',att,value,maptype='china',type="effectScatter",is_random=True, effect_scale=5,
         visual_text_color= "#fff",
         is_visualmap= True)
+    geore.add('',att,value,maptype='china',type="heatmap",is_random=True, effect_scale=5,
+        visual_text_color= "#fff",
+        is_visualmap= True)
+    page.add(geo)
+    page.add(geore)
     #data =[("海门", 9), ("鄂尔多斯", 12), ("招远", 12), ("舟山", 12), ("齐齐哈尔", 14), ("盐城", 15)]
     #geo =Geo("全国主要城市空气质量", "data from pm2.5",title_color="#fff", title_pos="center", width=1200, height=600, background_color='#404a59')
     #attr, value =geo.cast(data)
     #geo.add("", attr, value, type="effectScatter",maptype="china", is_random=True, effect_scale=5)
 
-    geo.render('hi.html')
+    page.render('geo.html')
     root = os.path.join(os.path.dirname(os.path.abspath(__file__)))#html是个文件夹
-    return send_from_directory(root,'hi.html')
+    cur.close()
+    return send_from_directory(root,'geo.html')
+
+@app.route("/cloud",methods=['post','get'])
+def cloud():
+    try:
+        topCityStart=request.form['topCityStart']
+        topCityEnd=request.form['topCityEnd']
+    except Exception as e:
+        print(e.args)
+        topCityStart='1'
+        topCityEnd='10'
+    start=topCityStart
+    end=topCityEnd
+    x=int(topCityEnd)
+    y=int(topCityStart)-1
+    z=x-y
+    topCityStart=str(y)
+    topCityEnd=str(z)
+    #topCityEnd=str(z)
+    
+    query="SELECT * FROM city order by nums desc limit "+topCityStart+","+topCityEnd
+    
+    cur=getcur()
+    count=cur.execute(query)
+    
+    att=list()
+    value=list()
+    while count>0:
+        one=cur.fetchone()
+        att.append(one[1])
+        value.append(one[3])
+        #bar.add(one[1],int(one[3]))
+        #bar.add_yaxis(one[1],int(one[3]))
+        count=count-1
+    wordCloud=WordCloud(width=1000,height=600)
+    wordCloud.add("热门城市云词图分析",att,value,word_size_range=[20,100],shape='apple')
+    wordCloud.render('cloud.html')
+    root = os.path.join(os.path.dirname(os.path.abspath(__file__)))#html是个文件夹
+    cur.close()
+    return send_from_directory(root,'cloud.html')
 
 @app.route("/heatmap/")
 def heatmap():

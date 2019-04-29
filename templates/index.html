@@ -34,38 +34,58 @@
     <div class="row">
         <div class="col-md-6">
             <div class="panel panel-default">
-                <div class="panel-heading">热门城市分析</div>
+                <div class="panel-heading">热门城市top分析</div>
                 <div class="panel-body">
-                    <p><a href="/top">请输入前n名热门城市(默认10)</a></p>
-                        <form  method="post" action="{{url_for('top')}}">
-                           第n名（默认1） <input type="text" name="topCityStart" value="1" />
-                           第m名(默认10)<input type="text" name="topCityEnd" value="10">
+                    <p><a href="/top">请输入前n名热门城市</a></p>
+                        <form  method="post" action="{{url_for('top')}}" onsubmit="return check()">
+                           第n名（默认1） <input type="number" id="one1" name="topCityStart" oninput=" if (value<1) value=1" value=1 /><br><br>
+                           第m名(默认10)&nbsp&nbsp<input type="number" id="one2" name="topCityEnd" oninput="if(value>50) value=50" value="10"><br><br>
                             <input type="submit" name="Submit"/>
                         </form>
+                    </p>
                 </div>
             </div>
         </div>
         <div class="col-md-6">
             <div class="panel panel-default">
-                <div class="panel-heading">城市top3景点</div>
+                <div class="panel-heading">热门城市分布分析</div>
                 <div class="panel-body">
-                    <p><a href="/top3/">福建省地图</a></p>
+                    <p><a href="/geo/">热门城市分布</a>
+                        <form  method="post" action="{{url_for('geo')}}">
+                           第n名（默认1） <input type="number" name="topCityStart" oninput="if(value<1) value=1" value=1 /><br><br>
+                           第m名(默认10)&nbsp&nbsp<input type="number" name="topCityEnd" oninput="if (value)>100 value=50" value="10" /><br><br>
+                            <input type="submit" name="Submit"/>
+                        </form>
+                    </p>
                 </div>
             </div>
         </div>
         <div class="col-md-6">
             <div class="panel panel-default">
-                <div class="panel-heading">柱形图</div>
+                <div class="panel-heading">热门城市云图分析</div>
                 <div class="panel-body">
-                    <p><a href="/bar/">格式化情况</a></p>
+                    <p><a href="/geo/">云词图</a>
+                        <form  method="post" action="{{url_for('cloud')}}">
+                           第n名（默认1） <input type="number" name="topCityStart" oninput="if(value<1) value=1" value=1 /><br><br>
+                           第m名(默认10) &nbsp&nbsp<input type="number" name="topCityEnd" oninput="if(value>50) value=50" value=10 /><br><br>
+                            <input type="submit" name="Submit"/>
+                        </form>
+                    </p>
                 </div>
             </div>
         </div>
+        
         <div class="col-md-6">
             <div class="panel panel-default">
-                <div class="panel-heading">日历热力图</div>
+                <div class="panel-heading">热门热力图分析</div>
                 <div class="panel-body">
-                    <p><a href="/heatmap/">2017 年微信步数情况</a></p>
+                    <p><a href="/geo/">云词图</a>
+                        <form  method="post" action="{{url_for('cloud')}}">
+                           第n名（默认1） <input type="number" name="topCityStart" oninput="if(value<1) value=1" /><br><br>
+                           第m名(默认10) &nbsp&nbsp<input type="number" name="topCityEnd" oninput="if(value>50) value=50"><br><br>
+                            <input type="submit" name="Submit"/>
+                        </form>
+                    </p>
                 </div>
             </div>
         </div>
@@ -73,5 +93,18 @@
         
     </div>
 </div>
+<script type="text/javascript">
+function check() 
+ { 
+ var num1=document.getElementsById("one1").value; <!-- 怎么拿数据？？ -->
+ var num2=document.getElementsById("one2").value; 
+ if(parseInt(num2)>parseInt(num1)) <!-正确写法（转换成INT）-->
+ { 
+ alert('num2 > num1！'); 
+ return false; 
+ } 
+ return false; 
+ } 
+</script>
 </body>
 </html>
