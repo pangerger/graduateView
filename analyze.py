@@ -12,7 +12,7 @@ from flask import Flask, render_template,request,send_from_directory
 from flask.templating import Environment
 import os.path
 
-from pyecharts import HeatMap, Map,Bar,Pie,WordCloud,Line,EffectScatter,configure,Geo,Page,Timeline,Style,Funnel
+from pyecharts import Map,Bar,Pie,WordCloud,Line,EffectScatter,configure,Geo,Page,Timeline,Style,Funnel
 from pyecharts.engine import ECHAERTS_TEMPLATE_FUNCTIONS
 from pyecharts.conf import PyEchartsConfig
 
