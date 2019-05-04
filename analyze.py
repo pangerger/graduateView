@@ -454,4 +454,4 @@ def pay():
     return render_template('pay.html', m=bar,line=line,es=es,all=barAll,all2=pie,over=over)
 
 
-app.run(port=5000,debug=True)
+app.run(port=80,debug=True)
