@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>旅游出行信息</title>
+    <title>旅游花费信息</title>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}"/>
     <script type="text/javascript" src="{{ url_for('static', filename='bootstrap/js/bootstrap.min.js') }}"></script>
     {{ echarts_js_dependencies(m) }}
@@ -31,10 +31,34 @@
     <!-- /.container -->
 </nav>
 <!-- /.navbar -->
+
 <div class="container">
     
     <div class="panel panel-default">
-        <div class="panel-heading">2018旅游出行数据分析</div>
+        <div class="panel-heading">总体旅游个人花费情况</div>
+        <div class="panel-body">
+            {{ echarts_container(all) }}
+        </div>
+    </div>
+
+    {{ echarts_js_content(all) }}
+</div>
+<div class="container">
+    
+    <div class="panel panel-default">
+        <div class="panel-heading">总体旅游个人花费情况</div>
+        <div class="panel-body">
+            {{ echarts_container(all2) }}
+        </div>
+    </div>
+
+    {{ echarts_js_content(all2) }}
+</div>
+
+<div class="container">
+    
+    <div class="panel panel-default">
+        <div class="panel-heading">旅游出行花费情况，1000元之内</div>
         <div class="panel-body">
             {{ echarts_container(m) }}
         </div>
@@ -46,49 +70,37 @@
 <div class="container">
     
     <div class="panel panel-default">
-        <div class="panel-heading">线性表示图</div>
+        <div class="panel-heading"></div>
         <div class="panel-body">
-            {{ echarts_container(l) }}
+            {{ echarts_container(line) }}
         </div>
     </div>
 
-    {{ echarts_js_content(l) }}
+    {{ echarts_js_content(line) }}
 </div>
 
 <div class="container">
     
     <div class="panel panel-default">
-        <div class="panel-heading">出行天数信息-玫瑰图</div>
+        <div class="panel-heading"></div>
         <div class="panel-body">
-            {{ echarts_container(t) }}
+            {{ echarts_container(es) }}
         </div>
     </div>
 
-    {{ echarts_js_content(t) }}
+    {{ echarts_js_content(es) }}
 </div>
 
 <div class="container">
     
     <div class="panel panel-default">
-        <div class="panel-heading">出行天数信息-坐标图</div>
+        <div class="panel-heading">花费在1000元以上</div>
         <div class="panel-body">
-            {{ echarts_container(tl) }}
+            {{ echarts_container(over) }}
         </div>
     </div>
 
-    {{ echarts_js_content(tl) }}
-</div>
-
-<div class="container">
-    
-    <div class="panel panel-default">
-        <div class="panel-heading">出行天数信息-层级图</div>
-        <div class="panel-body">
-            {{ echarts_container(c) }}
-        </div>
-    </div>
-
-    {{ echarts_js_content(c) }}
+    {{ echarts_js_content(over) }}
 </div>
 
 </body>

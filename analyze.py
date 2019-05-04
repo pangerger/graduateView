@@ -34,9 +34,10 @@ class MyFlask(Flask):
 # connect to mysql
 def getcur():
     try:
-        host='localhost'
-        passwd='root'
-        conn = MYSQLdb.connect(host=host, user='root', passwd=passwd, db='mfw', port=3306, charset='utf8')
+        host='104.168.234.94'
+        passwd='pjc996770483'
+        db='mfw2'
+        conn = MYSQLdb.connect(host=host, user='root', passwd=passwd, db=db, port=3306, charset='utf8')
         cur = conn.cursor()
         return cur
         #cur_update = conn.cursor() #这个游标用于更新
@@ -307,48 +308,150 @@ def top3():
     #return render_template('map.html', m=page)
     return send_from_directory(root,'top3.html')
 
-@app.route("/heatmap/")
-def heatmap():
-    hm = create_heatmap()
-    return render_template('heatmap.html', m=hm)
+
+@app.route("/month/")
+def month():
+    query="SELECT month,count(*) FROM strategy where year=2018 group by month"
+    query2="SELECT tianshu, count(*) FROM strategy where year=2018 group by tianshu;" 
+    cur=getcur()
+    count=cur.execute(query)
+    
+    bar=Bar("2018 出行时间分布")
+    
+    att=['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月']
+    value=list()
+    while count>0:
+        one=cur.fetchone()
+        value.append(one[1])
+
+        count-=1
+
+    bar.add('2018年旅游人数随月份变化图',att,value,is_label_show = True,is_random=True)
+    line=Line('2018年旅游人数随月份变化图')
+    line.add('2018年旅游人数随月份变化情况',att,value,is_label_show = True,is_random=True)
+    
+    count=cur.execute(query2)
+    att={'1天':0,'2天':0,'3天':0,'4天':0,'5天':0,'6~7天':0,'8~10天':0,'11~30天':0,'30天以上':0}
+    while count>0:
+        one=cur.fetchone()
+        if(one[0]==1):
+            att['1天']+=one[1]
+        elif one[0]==2:
+            att['2天']+=one[1]
+        elif one[0]==3:
+            att['3天']+=one[1]
+        elif one[0]==4:
+            att['4天']+=one[1]
+        elif one[0]==5:
+            att['5天']+=one[1]
+        elif one[0]<=7:
+            att['6~7天']+=one[1]
+        elif one[0]<=10:
+            att['8~10天']+=one[1]
+        elif one[0]<=30:
+            att['11~30天']+=one[1]
+        else:
+            att['30天以上']+=one[1]
+        count-=1
+    print(att)
+    attr=list(att.keys())
+    value=list(att.values())
+
+    es=Pie('出行天数',width=1300)# rose
+    es.add('出行天数',attr,value,is_label_show=True,center = [25,50],radius=[30, 75],rosetype='radius')
+
+    line2=Line('出行天数')
+    line2.add('出行天数',attr,value,is_label_show = True,is_random=True)
+
+    f=Funnel('出行天数')
+    f.add("出行天数",
+        attr,value,
+        is_label_show=True,
+    label_pos="inside",
+    label_text_color="#fff",
+    funnel_sort="ascending")
 
 
-def create_heatmap():
-    begin = datetime.date(2017, 1, 1)
-    end = datetime.date(2017, 12, 31)
-    data = [[str(begin + datetime.timedelta(days=i)),
-             random.randint(1000, 25000)] for i in
-            range((end - begin).days + 1)]
-    heatmap = HeatMap("日历热力图示例", "某人 2017 年微信步数情况", width=1100)
-    heatmap.add("", data, is_calendar_heatmap=True,
-                visual_text_color='#000', visual_range_text=['', ''],
-                visual_range=[1000, 25000], calendar_cell_size=['auto', 30],
-                is_visualmap=True, calendar_date_range="2017",
-                visual_orient="horizontal", visual_pos="center",
-                visual_top="80%", is_piecewise=True)
-    return heatmap
+    return render_template('map.html', m=bar,l=line,t=es,tl=line2,c=f)
 
 
+@app.route("/pay/")
+def pay():
+
+    query="SELECT pay, count(*) FROM strategy where pay!=0 group by pay"
+    cur=getcur()
+    count=cur.execute(query)
+    
+    attr={'1~100':0,'100~200':0,'200~300':0,'300~400':0,'400~500':0,'500~600':0,'600~700':0,'700~800':0,'800~900':0,'900~1000':0,'1000~1300':0,'1300~1500':0,'1500~2500':0,'2500~3000':0,'3000~3500':0,'3500~4000':0,'4000~5000':0,'5000~6000':0,'6000~10000':0,'10000以上':0}
+    value=list()
+    while count>0:
+        one=cur.fetchone()
+        if one[0]<=100:
+            attr['1~100']+=one[1]
+        elif one[0]<=200:
+            attr['100~200']+=one[1]
+        elif one[0]<=300:
+            attr['200~300']+=one[1]
+        elif one[0]<=400:
+            attr['300~400']+=one[1]
+        elif one[0]<=500:
+            attr['400~500']+=one[1]
+        elif one[0]<=600:
+            attr['500~600']+=one[1]
+        elif one[0]<=700:
+            attr['600~700']+=one[1]
+        elif one[0]<=800:
+            attr['700~800']+=one[1]
+        elif one[0]<=900:
+            attr['800~900']+=one[1]
+        elif one[0]<=1000:
+            attr['900~1000']+=one[1]
+        elif one[0]<=1300:
+            attr['1000~1300']+=one[1]
+        elif one[0]<=1500:
+            attr['1300~1500']+=one[1]
+        elif one[0]<=2500:
+            attr['1500~2500']+=one[1]
+        elif one[0]<=3000:
+            attr['2500~3000']+=one[1]
+        elif one[0]<=3500:
+            attr['3000~3500']+=one[1]
+        elif one[0]<=4000:
+            attr['3500~4000']+=one[1]
+        elif one[0]<=5000:
+            attr['4000~5000']+=one[1]
+        elif one[0]<=6000:
+            attr['5000~6000']+=one[1]
+        elif one[0]<=10000:
+            attr['6000~10000']+=one[1]
+        else:
+            attr['10000以上']+=one[1]
+        count-=1
+
+    att=list(attr.keys())[:10]
+    value=list(attr.values())[:10]
+    bar=Bar("旅游花费")
+    bar.add('',att,value,is_label_show = True,is_datazoom_show=True,is_random=True, mark_point=["average"])
+    line=Line('旅游花费信息')
+    line.add('',att,value,is_label_show = True,is_random=True, mark_point=["average"])
+    es=Pie('1000元之内',width=1300)# rose
+    es.add('',att,value,is_label_show=True,center = [25,50],radius=[30, 75],rosetype='radius')
+
+    att=list(attr.keys())
+    value=list(attr.values())
+    barAll=Bar("总体花费情况")
+    barAll.add('',att,value,is_label_show = True,is_datazoom_show=True,is_random=True)
+    
+    pie=Pie('',width=1000,height=700)# rose
+    pie.add('',att,value,is_label_show=True)
+
+    att=list(attr.keys())[10:]
+    value=list(attr.values())[10:]
+    over=Pie('',width=1200)# rose
+    over.add('',att,value,is_label_show=True)
 
 
-
-
-
-@app.route('/fujian/')
-def fujian():
-    value = [20, 190, 253, 77, 65]
-    attr = ['福州市', '厦门市', '南平市', '泉州市', '三明市']
-    map = Map("福建地图示例", width='100%', height=600)
-    map.add("", attr, value, maptype='福建', is_visualmap=True,
-            visual_text_color='#000')
-    return render_template('fujian_map.html', m=map)
-
-@app.route('/bar/')
-def bar():
-    bar = Bar()
-    bar.add('格式化',["atf_tb1","shop"],[10,50])
-    bar.add("范围", ["shop"], [120])
-    return render_template('heatmap.html', m=bar)
+    return render_template('pay.html', m=bar,line=line,es=es,all=barAll,all2=pie,over=over)
 
 
 app.run(port=5000,debug=True)
